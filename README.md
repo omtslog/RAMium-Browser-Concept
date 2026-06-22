@@ -159,3 +159,18 @@ Hi there! I am **omtslog**, the Product Owner and vision holder of RAMium. While
 If you are a C++ engineer, a Chromium Embedded Framework (CEF) expert, or a systems architect—this project needs you! Here is how you can pitch in:
 1.  **Architecture Review (RFC):** Head over to the **Issues** tab to discuss, critique, or optimize our memory caching and CPU core allocation logic.
 2.  **Code Contributions:** Feel free to **Fork** this repository, start hacking on any of the Roadmap phases, and submit a **Pull Request**. I will gladly review and merge your code into the main tree.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Got RAM? Share it!**
