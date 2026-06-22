@@ -89,6 +89,14 @@
 *   **Embedded iGPU-Driven Retro Gaming & Emulation:**
     Direct integration of WASM-compiled emulation cores (x86, ARM, and vintage console runtimes like DOS, PlayStation, Sega) utilizing native WebGL 2.0 / WebGPU pipelining. All binary disk images (ROMs), shaders, and textures are dynamically allocated into the host system RAM. RAMium's architecture guarantees these execution pipelines are strictly bound to the integrated graphics core (iGPU) and efficiency cores (E-cores). Users can run distinct gaming sessions or heavy interactive apps right inside a tab (e.g., on a secondary display) without stripping a single clock cycle or a megabyte of VRAM from the primary discrete GPU running a heavy AAA-title. Closing the tab forces Windows to immediately release and reclaim the entire virtualization memory sub-block.
 
+#### 7. Messenger Integration with RAM-Isolated Traffic (Sidebar Sandbox)
+*   **Disk I/O Suppression for Web Chats:**
+    Web clients (Telegram Web, Discord, WhatsApp) are embedded into the UI via a dedicated, isolated sidebar component (`Sidebar WebContents`). Their sub-processes comply entirely with RAMium’s global core logic: all media streams (voice notes, video previews, channel avatars, and heavy attachments) are processed strictly inside dynamic host RAM buffers. Physical media caching to SSD sectors is completely blocked.
+*   **Amnesic Session Destruction:**
+    Authentication tokens and session keys are held exclusively within the volatile process memory space. If "Wipe Everything" is selected on browser exit, these tokens are instantly purged from RAM with zero recovery footprint, preventing session hijacking through post-mortem hardware drive forensics. If "Selective Preservation" is toggled, the specific messenger's token is pinpoint-encrypted via AES-256 into the `session.ram` container on the SSD, expanding back into RAM on the next boot and immediately undergoing a secure zero-fill overwrite (Secure Wipe) on the disk.
+
+
+
 
 
 ---
