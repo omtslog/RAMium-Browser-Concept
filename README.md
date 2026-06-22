@@ -52,6 +52,13 @@
 *   **Амнезийное уничтожение сессий:**
     Токены авторизации и сессионные ключи мессенджеров удерживаются строго в адресном пространстве памяти процесса. При выборе опции «Полная очистка» во время закрытия браузера, токены мгновенно стираются из памяти без возможности восстановления, предотвращая кражу сессий (Session Hijacking) через физический анализ накопителя. При выборе «Селективного сохранения» — токен конкретного мессенджера точечно шифруется алгоритмом AES-256 в контейнер `session.ram` на SSD, разворачиваясь в RAM при следующем запуске и моментально затираясь на диске нулями (Secure Wipe).
 
+#### 9. Встроенный прокси-менеджер и VPN с ОЗУ-изоляцией ключей (Network Isolation)
+*   **Низкоуровневая инкапсуляция трафика:**
+    Мы модифицируем сетевой слой Chromium (`services/network/`). В сетевой стек интегрируются легковесные клиенты прокси-протоколов (Shadowsocks, VLESS, WireGuard). Сессионные конфигурации и криптографические ключи туннелей генерируются динамически и удерживаются исключительно в адресном пространстве ОЗУ. Физическая запись логов подключения и конфигурационных файлов на SSD полностью исключена. При уничтожении процесса ключи стираются, аннулируя сессию.
+*   **Аппаратный Anti-Leak и селективный пинг:**
+    Блокировка утечек данных на уровне кода: подсистемы WebRTC и DNS-резолвера принудительно перенаправляются внутрь поднятого прокси-контекста, исключая обходные запросы к серверам провайдера. Реализуется селективная маршрутизация: шифрование применяется строго к выделенным процессам-рендерерам (вкладкам браузера), что гарантирует неизменность прямого сетевого маршрута и минимальный пинг для сторонних процессов ОС (запущенных параллельно сетевых игр).
+
+
 
 
 ---
@@ -101,6 +108,13 @@
     Web clients (Telegram Web, Discord, WhatsApp) are embedded into the UI via a dedicated, isolated sidebar component (`Sidebar WebContents`). Their sub-processes comply entirely with RAMium’s global core logic: all media streams (voice notes, video previews, channel avatars, and heavy attachments) are processed strictly inside dynamic host RAM buffers. Physical media caching to SSD sectors is completely blocked.
 *   **Amnesic Session Destruction:**
     Authentication tokens and session keys are held exclusively within the volatile process memory space. If "Wipe Everything" is selected on browser exit, these tokens are instantly purged from RAM with zero recovery footprint, preventing session hijacking through post-mortem hardware drive forensics. If "Selective Preservation" is toggled, the specific messenger's token is pinpoint-encrypted via AES-256 into the `session.ram` container on the SSD, expanding back into RAM on the next boot and immediately undergoing a secure zero-fill overwrite (Secure Wipe) on the disk.
+
+#### 9. Built-in Proxy Manager & VPN with RAM-Isolated Keys (Network Isolation)
+*   **Low-Level Traffic Encapsulation:**
+    We modify Chromium’s network layer (`services/network/`) to embed lightweight proxy clients (Shadowsocks, VLESS, WireGuard) straight into the network stack. Session configurations and cryptographic tunnel keys are generated dynamically and held strictly within the volatile RAM space. Writing connection logs or config files to the SSD is completely blocked. When the process terminates, the keys are instantly purged, rendering past traffic captures unrecoverable.
+*   **Hardware Anti-Leak & Selective Routing:**
+    Enforcing data leak prevention at the code level: the WebRTC and DNS resolver subsystems are forced into the proxy context, eliminating bypass leaks to ISP servers. Selective routing is implemented to ensure encryption applies exclusively to individual renderer processes (browser tabs), keeping the direct network route and minimum ping fully intact for external OS applications like running multiplayer games.
+
 
 
 
