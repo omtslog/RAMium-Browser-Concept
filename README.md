@@ -58,6 +58,13 @@
 *   **Аппаратный Anti-Leak и селективный пинг:**
     Блокировка утечек данных на уровне кода: подсистемы WebRTC и DNS-резолвера принудительно перенаправляются внутрь поднятого прокси-контекста, исключая обходные запросы к серверам провайдера. Реализуется селективная маршрутизация: шифрование применяется строго к выделенным процессам-рендерерам (вкладкам браузера), что гарантирует неизменность прямого сетевого маршрута и минимальный пинг для сторонних процессов ОС (запущенных параллельно сетевых игр).
 
+#### 9.: Децентрализованный P2P-бартер и ОЗУ-изоляция (Value-to-Value Exchange Engine)
+*   **Архитектурный баланс обмена мощностей на приватность:**
+    *   **RU:** RAMium вводит низкоуровневую систему учета игрового времени в ОЗУ — **Time-for-VIP Ledger**, которая связывает независимых провайдеров (VPN/прокси/пароли) и геймеров в единую экосистему обмена без фиатных денег. Владельцы систем (от 32/64 ГБ ОЗУ) безопасно монетизируют простои железа, пока спят или находятся на работе. Продав, например, 5 часов простоя своего ПК в пул комьюнити для удаленного гейминга на dGPU, пользователь автоматически активирует Pro-режим браузера. RAMium выступает прозрачным регулятором, переводя ценность от аренды сторонним разработчикам софта в качестве честной платы за их инфраструктуру. Покупатели со слабых ПК, приобретая, например, пакет из 10 часов игрового времени у хостов, также автоматически поощряются бесплатным VIP-статусом в браузере.
+*   **Двусторонняя криптографическая защита в ОЗУ:**
+    *   **RU:** Безопасность в экосистеме является абсолютно симметричной и обеспечивается изоляцией на уровне памяти. Удаленный гостевой процесс разворачивается СТРОГО внутри изолированной ОЗУ-песочницы (In-Memory Isolation Sandbox), полностью исключая физический доступ к файловой системе (SSD) и учетным записям владельца ПК. С другой стороны, вводимые гостем пароли от его игровых аккаунтов (Steam, Epic Games) и игровой кэш обрабатываются исключительно в выделенных блоках памяти хоста, к которым у владельца ПК нет доступа. При завершении сессии вся выделенная область памяти хоста мгновенно уничтожается методом Secure Wipe (запись нулями) — сессия гостя бесследно испаряется.
+
+
 
 
 
@@ -114,6 +121,13 @@
     We modify Chromium’s network layer (`services/network/`) to embed lightweight proxy clients (Shadowsocks, VLESS, WireGuard) straight into the network stack. Session configurations and cryptographic tunnel keys are generated dynamically and held strictly within the volatile RAM space. Writing connection logs or config files to the SSD is completely blocked. When the process terminates, the keys are instantly purged, rendering past traffic captures unrecoverable.
 *   **Hardware Anti-Leak & Selective Routing:**
     Enforcing data leak prevention at the code level: the WebRTC and DNS resolver subsystems are forced into the proxy context, eliminating bypass leaks to ISP servers. Selective routing is implemented to ensure encryption applies exclusively to individual renderer processes (browser tabs), keeping the direct network route and minimum ping fully intact for external OS applications like running multiplayer games.
+
+#### 9. Decentralized P2P Barter & In-Memory Isolation (Value-to-Value Exchange Engine)
+*   **Architectural Symmetry of Hardware-to-Privacy Barter:**
+    *   **ENG:** RAMium introduces a low-level in-memory billing engine—**Time-for-VIP Ledger**, linking independent security vendors (VPN/proxies/vaults) and gamers into a fiat-free value exchange ecosystem. Systems owners (32/64 GB RAM or higher) safely monetize hardware downtime while they sleep or are away at work. By sharing, for example, 5 hours of host dGPU runtime to the community pool, the user automatically triggers the browser's Pro status. RAMium acts as an automated clearinghouse, seamlessy shifting value from hardware runtime to compensate third-party software developers for their premium infrastructure. Laptop clients purchasing a 10-hour pack of streaming runtime are also instantly awarded a complimentary VIP status on their browser instance.
+*   **Two-Way Cryptographic Protection in RAM:**
+    *   **ENG:** Ecosystem security is entirely symmetrical and heavily driven by memory isolation profiles. The remote guest stream runs on the dGPU but deploys STRICTLY inside an isolated, volatile RAM container (In-Memory Isolation Sandbox), completely blocking physical I/O calls to the host's operating system or SSD storage. Conversely, the guest's inputs, entered game account credentials (Steam, Epic Games), and live memory cache are handled strictly within hidden allocated RAM sub-blocks on the host, invisible to the hardware provider. The moment the session terminates, the allocated RAM underwent an immediate Secure Wipe (zero-fill overwrite)—leaving zero recovery footprint and vanishing without a trace.
+
 
 
 
