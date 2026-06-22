@@ -70,3 +70,22 @@
 The project is currently in the **Concept / RFC (Request for Comments)** stage. We are looking for C++ developers and Chromium Embedded Framework (CEF) engineers to build the first prototype.
 
 Проект находится на стадии архитектурного проектирования. Открыт для предложений C++ разработчиков и инженеров.
+
+## 🤝 How to Contribute / Как помочь проекту
+
+### 🇷🇺 Для русскоязычных разработчиков
+Привет! Я — **omtslog**, автор идеи и продукт-менеджер проекта RAMium. Я не являюсь C++ программистом, но я детально продумал архитектуру, Win32 API механизмы и логику этого браузера, так как глубоко понимаю боли геймеров и продвинутых пользователей. 
+
+Если вы C++ инженер, специалист по Chromium Embedded Framework (CEF) или системный архитектор — этот проект открыт для вас! Вы можете помочь проекту следующими способами:
+1.  **Обсуждение архитектуры (RFC):** Зайдите во вкладку **Issues** и предложите свои идеи по улучшению логики работы кэша или алгоритма CPU Affinity.
+2.  **Разработка кода:** Сделайте **Fork** этого репозитория, начните реализацию любого из Этапов (Roadmap) и отправьте мне **Pull Request**. Я с радостью изучу ваш код и объединю его с основным проектом.
+3.  **Продвижение:** Поставьте этому проекту ⭐ **Star** на GitHub, чтобы о концепте RAMium узнало как можно больше людей.
+
+---
+
+### 🇺🇸 For International Developers
+Hi there! I am **omtslog**, the Product Owner and vision holder of RAMium. While I am not a C++ developer myself, I have meticulously designed the architectural logic, Win32 API integration sequences, and features based on real-world gamer and power-user bottlenecks.
+
+If you are a C++ engineer, a Chromium Embedded Framework (CEF) expert, or a systems architect—this project needs you! Here is how you can pitch in:
+1.  **Architecture Review (RFC):** Head over to the **Issues** tab to discuss, critique, or optimize our memory caching and CPU core allocation logic.
+2.  **Code Contributions:** Feel free to **Fork** this repository, start hacking on any of the Roadmap phases, and submit a **Pull Request**. I will gladly review and merge your code into the main tree.
