@@ -46,6 +46,13 @@
 *   **Игровой ретро-комбайн и эмуляция на базе iGPU:**
     Интеграция скомпилированных в WASM ядер эмуляции (архитектуры x86, ARM, а также консольных сред DOS, PlayStation, Sega) с прямой трансляцией графических инструкций через WebGL 2.0 / WebGPU. Все бинарные образы (ROM-файлы), шейдеры и текстуры динамически загружаются в ОЗУ хоста. Архитектура RAMium гарантирует, что эти тяжелые вычислительные процессы жестко заперты внутри встроенного видеоядра (iGPU) и свободных энергоэффективных ядер процессора (E-cores). Это позволяет пользователю параллельно запускать полноценные игровые сессии или тяжелые интерактивные приложения прямо во вкладке браузера (например, на втором мониторе), не отбирая ни единого такта производительности или мегабайта VRAM у основной дискретной видеокарты, на которой запущена AAA-игра. При закрытии вкладки вся аллоцированная под виртуализацию область памяти мгновенно деструктурируется Windows.
 
+#### 8. Интеграция мессенджеров с ОЗУ-изоляцией трафика (Sidebar Sandbox)
+*   **Блокировка дискового I/O для веб-чатов:**
+    Веб-клиенты мессенджеров (Telegram Web, Discord, WhatsApp) интегрируются в интерфейс браузера через изолированный компонент боковой панели (`Sidebar WebContents`). Их процессы полностью подчиняются глобальной логике RAMium: все медиа-потоки (голосовые сообщения, превью видео, аватарки каналов и тяжелые вложения) обрабатываются исключительно внутри динамического буфера ОЗУ хоста. Физическая запись медиа-кэша на сектор SSD полностью заблокирована.
+*   **Амнезийное уничтожение сессий:**
+    Токены авторизации и сессионные ключи мессенджеров удерживаются строго в адресном пространстве памяти процесса. При выборе опции «Полная очистка» во время закрытия браузера, токены мгновенно стираются из памяти без возможности восстановления, предотвращая кражу сессий (Session Hijacking) через физический анализ накопителя. При выборе «Селективного сохранения» — токен конкретного мессенджера точечно шифруется алгоритмом AES-256 в контейнер `session.ram` на SSD, разворачиваясь в RAM при следующем запуске и моментально затираясь на диске нулями (Secure Wipe).
+
+
 
 ---
 
@@ -83,13 +90,13 @@
 *   **Uncompromising Offloading Lock:**
     The GPU process is forced to initialize with strict system flags, including `--force-low-power-gpu` and targeted `--gpu-testing-vendor-id/device-id` variables pointing directly to the iGPU. To tightly enforce this restriction against Windows-level overrides, RAMium sends a direct request to the OS kernel via the Windows native `D3DKMTSetProcessSchedulingPriorityClass` API, setting the browser's GPU thread priority profile to ultra power-saving mode, completely locking out discrete GPU resources.
 
-#### 6. In-Memory Virtualization Ecosystem (Mini-OS, WASM-Containers & Embedded Gaming)
+#### 7. In-Memory Virtualization Ecosystem (Mini-OS, WASM-Containers & Embedded Gaming)
 *   **Isolated WebAssembly Sandbox for Micro-OS:**
     Leveraging the high-performance V8 engine and WebAssembly (WASM) compiler tech, RAMium spawns self-contained, independent micro-containers of lightweight operating systems (e.g., Alpine Linux or tailored modular kernels) directly within the RAM address space of a specific tab process. The virtual stack is backed by an emulated file system dynamically allocated inside the process heap. All POSIX/Win32 system calls are translated entirely within this volatile sandbox, executing absolute I/O blocking against the physical host drive. This structure enables safe execution of disposable development environments (Node.js, Python, compiler toolchains) acting as single-use OS instances with zero malware persistence risk.
 *   **Embedded iGPU-Driven Retro Gaming & Emulation:**
     Direct integration of WASM-compiled emulation cores (x86, ARM, and vintage console runtimes like DOS, PlayStation, Sega) utilizing native WebGL 2.0 / WebGPU pipelining. All binary disk images (ROMs), shaders, and textures are dynamically allocated into the host system RAM. RAMium's architecture guarantees these execution pipelines are strictly bound to the integrated graphics core (iGPU) and efficiency cores (E-cores). Users can run distinct gaming sessions or heavy interactive apps right inside a tab (e.g., on a secondary display) without stripping a single clock cycle or a megabyte of VRAM from the primary discrete GPU running a heavy AAA-title. Closing the tab forces Windows to immediately release and reclaim the entire virtualization memory sub-block.
 
-#### 7. Messenger Integration with RAM-Isolated Traffic (Sidebar Sandbox)
+#### 8. Messenger Integration with RAM-Isolated Traffic (Sidebar Sandbox)
 *   **Disk I/O Suppression for Web Chats:**
     Web clients (Telegram Web, Discord, WhatsApp) are embedded into the UI via a dedicated, isolated sidebar component (`Sidebar WebContents`). Their sub-processes comply entirely with RAMium’s global core logic: all media streams (voice notes, video previews, channel avatars, and heavy attachments) are processed strictly inside dynamic host RAM buffers. Physical media caching to SSD sectors is completely blocked.
 *   **Amnesic Session Destruction:**
