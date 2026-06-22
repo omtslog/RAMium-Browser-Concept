@@ -34,7 +34,7 @@
 #### 5. Автоматизированная архитектура обновлений
 * Проект реализуется в виде набора автоматизированных патчей (**Git Patches**) и скриптов автосборки. Серверный скрипт отслеживает апдейты официального репозитория Chromium. При выходе обновлений безопасности робот автоматически накладывает патчи RAMium поверх нового кода и компилирует свежий билд.
 
-* #### 6: Жесткое аппаратное ограничение GPU (Integrated Graphics Only)
+#### 6: Жесткое аппаратное ограничение GPU (Integrated Graphics Only)
 *   **Принудительный перехват графического контекста (DXGI API):**
     При инициализации графического подпроцесса Chromium опрашивает систему. Мы модифицируем файл `gpu/config/gpu_info_collector_win.cc`. Браузер перехватывает список видеокарт через DirectX Graphics Infrastructure API (`IDXGIAdapter::GetDesc`). При включении этого режима RAMium вводит жесткое аппаратное ограничение: дискретная видеокарта (Nvidia/AMD) полностью игнорируется на физическом уровне. Это высвобождает до 1.5–2 ГБ дефицитной видеопамяти (VRAM) и полностью убирает фоновую нагрузку на GPU во время воспроизведения 4K-видео или стримов на втором мониторе.
 *   **Бескомпромиссный блок системного переключения:**
@@ -71,7 +71,7 @@
 #### 5. Automated Update Architecture
 * The project is maintained as a set of automated **Git Patches** and build scripts. A server-side script tracks updates upstream in the official Chromium repository. When security patches drop, the automation applies RAMium patches onto the new code and compiles a fresh build.
 
-* ###### Phase 6: Hard Hardware Restriction (Integrated Graphics Only)
+##### Phase 6: Hard Hardware Restriction (Integrated Graphics Only)
 *   **Enforced Graphics Context Interception (DXGI API):**
     During GPU sub-process initialization, Chromium queries the OS. We modify `gpu/config/gpu_info_collector_win.cc`. The browser intercepts the display adapter list via the DirectX Graphics Infrastructure API (`IDXGIAdapter::GetDesc`). When active, RAMium enforces a hard hardware restriction: the discrete graphics card (Nvidia/AMD) is completely ignored at the physical level. This liberates up to 1.5–2 GB of precious VRAM and eliminates background GPU overhead during 4K video or stream playback on secondary displays.
 *   **Uncompromising Offloading Lock:**
