@@ -17,11 +17,11 @@
 * **Базы данных в ОЗУ:** Все локальные хранилища (история посещений, cookies, веб-хранилища LocalStorage и IndexedDB) инициализируются через SQLite константу `:memory:`. При закрытии процесса сессия бесследно испаряется.
 * **Локальная безопасность:** Защита от физического извлечения данных. На диске компьютера не остается заблокированных или «битых» временных файлов.
 
-#### 2. Селективное сохранение и «Умный выход»
-* **Изолированный менеджер паролей:** Единственный модуль, имеющий точечный доступ к зашифрованному файлу на SSD через Windows DPAPI. Пароли запрашиваются при старте и сохраняются на диск только по прямому согласию пользователя.
-* **Диалог завершения работы:** При нажатии на «крестик» подсистема `BrowserCloseManager` перехватывает событие и предлагает выбор:
-  * *[🗑️ Стереть всё]:* Моментальное уничтожение процесса и очистка ОЗУ.
-  * *[💾 Сохранить сессию]:* Упаковка текущих вкладок и куков в один зашифрованный временный файл на SSD. При следующем старте файл разворачивается в ОЗУ и тут же стирается с диска.
+#### 2. Селективная амнезия, менеджер паролей и «Умный выход»
+*   **Изолированный менеджер паролей:** Единственный модуль, имеющий точечный доступ к зашифрованному файлу на SSD через Windows DPAPI. Пароли запрашиваются при старте и сохраняются на диск только по прямому согласию пользователя.
+*   **Диалог завершения работы с функцией точечной амнезии:** При нажатии на «крестик» подсистема `BrowserCloseManager` перехватывает событие закрытия и предлагает пользователю гибкий выбор:
+    *   `[🗑️ Полная очистка]`: Моментальное уничтожение процессов браузера (`base::Process::Terminate`), ОЗУ полностью освобождается, на SSD не пишется ничего.
+    *   `[🎯 Селективное сохранение]`: Вывод кастомного оверлейного UI-окна со списком всех активных дескрипторов вкладок. Пользователь может отметить галочками только нужные страницы (например, рабочий чат или важную статью). Браузер мгновенно уничтожает в памяти 99% фонового кэша, истории и куков невыбранных страниц. Выбранные вкладки и их авторизационные сессии поток-сериализатор собирает из ОЗУ, упаковывает в байтовый поток, шифрует алгоритмом AES-256 и точечно записывает на SSD в один временный файл `session.ram`. При следующем холодном старте RAMium считывает этот файл, разворачивает структуры данных обратно в ОЗУ и немедленно уничтожает файл с диска методом Secure Wipe (запись нулями).
 
 #### 3. Аппаратное управление ресурсами (CPU Affinity для геймеров)
 * **Исключение загруженных ядер:** Интеграция системной функции `SetProcessAffinityMask` напрямую в настройки производительности браузера. Возможность вручную или автоматически освобождать первые ядра процессора (CPU 0-3), которые обычно перегружены ОС и тяжелыми играми, для исключения микрофризов (статтеров).
@@ -47,11 +47,11 @@
 * **RAM-Based Databases:** All local storage (browsing history, cookies, LocalStorage, and IndexedDB) is initialized using the SQLite `:memory:` constant. Once the process terminates, the session vanishes without a trace.
 * **Local Security:** Protection against physical data extraction. No locked or corrupted temporary files remain on the drive.
 
-#### 2. Selective Storage & "Smart Close"
-* **Isolated Password Manager:** The only module allowed pinpoint access to an encrypted file on the SSD via Windows DPAPI. Passwords are read at startup and written to the disk only with explicit user consent.
-* **Session Termination Dialog:** Upon clicking the close button, the `BrowserCloseManager` subsystem intercepts the event and prompts a choice:
-  * *[🗑️ Wipe Everything]:* Immediate process termination and RAM clearance.
-  * *[💾 Save Session]:* Compressing current tabs and cookies into a single encrypted temporary file on the SSD. On the next launch, this file expands into RAM and is instantly deleted from the disk.
+#### 2. Selective Amnesia, Password Manager & "Smart Close"
+*   **Isolated Password Manager:** The only module allowed pinpoint access to an encrypted file on the SSD via Windows DPAPI. Passwords are read at startup and written to the disk only with explicit user consent.
+*   **Session Termination Dialog with Pinpoint Amnesia:** Upon clicking the close button, the `BrowserCloseManager` subsystem intercepts the event and prompts a flexible choice:
+    *   `[🗑️ Wipe Everything]`: Immediate process termination (`base::Process::Terminate`) and complete RAM clearance; absolutely zero data is written to the SSD.
+    *   `[🎯 Selective Preservation]`: Triggers a custom overlay UI listing all active tab handles. The user can toggle checkboxes to save only specific pages (e.g., a work chat or an important article). The browser instantly purges 99% of background cache, history, and cookies of unselected pages from memory. A serialization thread marshals only the chosen tabs and their auth sessions from RAM into a byte stream, encrypts it via AES-256, and writes a single temporary `session.ram` file to the SSD. On the subsequent cold boot, RAMium reads this file, expands the structures back into RAM, and immediately overwrites the file on the disk with zeroes (Secure Wipe).
 
 #### 3. Hardware Resource Management (CPU Affinity for Gamers)
 * **Core Exclusion:** Integrating the native `SetProcessAffinityMask` API directly into the browser's performance settings. Users can manually or automatically free up the first CPU cores (e.g., CPU 0-3)—which are usually overloaded by the OS and games—to eliminate micro-stutters.
